@@ -1,1 +1,7 @@
 ---
+# install
+- name: Ensure certbot is installed.
+  yum:
+    name: certbot
+    state: installed
+    enablerepo: epel
