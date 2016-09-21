@@ -1,1 +1,9 @@
 ---
+- name: restart renew-timer
+  service: name=letsencrypt-renew.timer state=restarted
+
+- name: restart renew
+  service: name=letsencrypt-renew state=restarted
+
+- name: reload daemon
+  command: systemctl daemon-reload

@@ -5,3 +5,49 @@
     name: certbot
     state: installed
     enablerepo: epel
+
+- name: Ensure lsof is installed.
+  yum:
+    name: lsof
+    state: installed
+
+# certbot
+- shell: lsof -i:80 | awk 'NR==2{print $1}'
+  register: result
+  changed_when: false
+
+- set_fact: http_service="{{ result.stdout }}"
+
+- include: certonly.yml
+
+# configure
+- name: Copy renew-timer configuration in place.
+  copy:
+    src: letsencrypt-renew.timer
+    dest: /etc/systemd/system/letsencrypt-renew.timer
+    owner: root
+    group: root
+    mode: 00644
+  notify:
+    - reload daemon
+    - restart renew-timer
+
+- name: Copy renew-service configuration in place.
+  copy:
+    src: letsencrypt-renew.service
+    dest: /etc/systemd/system/letsencrypt-renew.service
+    owner: root
+    group: root
+    mode: 00644
+  notify:
+    - reload daemon
+    - restart renew
+
+# service
+- name: Ensure renew-timer is started and enabled to start at boot.
+  service: name=letsencrypt-renew.timer state=started enabled=yes
+
+- name: Ensure renew is started and enabled to start at boot.
+  service: name=letsencrypt-renew state=started enabled=yes
+
+# web server

@@ -1,0 +1,11 @@
+# Managed by ansible
+
+[Unit]
+Description=Renew all certificates if they are about to expire
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c "sleep `expr $RANDOM % 3600`; /usr/bin/certbot renew --non-interactive"
+
+[Install]
+WantedBy=multi-user.target
