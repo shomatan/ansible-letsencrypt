@@ -51,3 +51,5 @@
   service: name=letsencrypt-renew state=started enabled=yes
 
 # web server
+- include: nginx.yml
+  when: http_service == 'nginx'

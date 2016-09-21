@@ -3,7 +3,7 @@
   service: name="{{ http_service }}" state=stopped
   when: http_service != ""
 
-- name: Check encrypt file exists.
+- name: Check the encrypt file exists.
   stat:
     path: /etc/letsencrypt/live/{{ letsencrypt_domain }}
   register: f
