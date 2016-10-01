@@ -8,8 +8,7 @@
     mode:  00755
 
 - name: Check the encrypt file exists.
-  stat:
-    path: /etc/nginx/ssl/dh2048.pem
+  stat: path=/etc/nginx/ssl/dh2048.pem
   register: f
 
 - name: Create openssl dhparam.

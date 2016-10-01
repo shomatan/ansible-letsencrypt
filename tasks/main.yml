@@ -1,15 +1,10 @@
 ---
 # install
 - name: Ensure certbot is installed.
-  yum:
-    name: certbot
-    state: installed
-    enablerepo: epel
+  yum: name=certbot enablerepo=epel
 
 - name: Ensure lsof is installed.
-  yum:
-    name: lsof
-    state: installed
+  yum: name=lsof
 
 # certbot
 - shell: lsof -i:80 | awk 'NR==2{print $1}'
