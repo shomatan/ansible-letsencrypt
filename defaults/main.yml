@@ -1,3 +1,4 @@
 ---
 letsencrypt_domain: ""
 letsencrypt_contact: ""
+letsencrypt_webservice_type: nginx
