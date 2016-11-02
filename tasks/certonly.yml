@@ -13,7 +13,7 @@
 - name: Run certbot certonly.
   command: certbot certonly --standalone -n --agree-tos --domain {{ item.key }} --email {{ item.value.email }}
   args:
-    creates: /etc/letsencrypt/live/{{ letsencrypt_domain }}
+    creates: /etc/letsencrypt/live/{{ item.key }}
   with_dict: "{{ letsencrypt_domains }}"
 
 - name: Ensure "{{ http_service }}" is started at finished certbot.
