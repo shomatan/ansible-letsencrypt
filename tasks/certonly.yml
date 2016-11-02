@@ -1,18 +1,21 @@
 ---
 - name: Check the encrypt file exists.
-  stat: path=/etc/letsencrypt/live/{{ letsencrypt_domain }}
+  stat: path=/etc/letsencrypt/live/{{ item.key }}
   register: result
-- set_fact: cert_exists="{{ result.stat.exists }}"
+  with_dict: "{{ letsencrypt_domains }}"
+
+# - set_fact: cert_exists="{{ result.stat.exists }}"
 
 - name: Ensure "{{ http_service }}" is stopped at runnning certbot.
   service: name="{{ http_service }}" state=stopped
-  when: http_service != "" and not cert_exists
+  when: http_service != ""
 
 - name: Run certbot certonly.
-  command: certbot certonly --standalone -n --agree-tos --domain {{ letsencrypt_domain }} --email {{ letsencrypt_contact }}
+  command: certbot certonly --standalone -n --agree-tos --domain {{ item.key }} --email {{ item.value.email }}
   args:
     creates: /etc/letsencrypt/live/{{ letsencrypt_domain }}
+  with_dict: "{{ letsencrypt_domains }}"
 
 - name: Ensure "{{ http_service }}" is started at finished certbot.
   service: name="{{ http_service }}" state=started
-  when: http_service != "" and not cert_exists
+  when: http_service != ""
