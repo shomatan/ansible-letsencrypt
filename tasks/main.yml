@@ -8,32 +8,22 @@
 
 # certbot
 - shell: lsof -i:80 | awk 'NR==2{print $1}'
-  register: result
+  register: web_server
   changed_when: false
 
-- set_fact: http_service="{{ result.stdout }}"
+- set_fact: http_service="{{ web_server.stdout }}"
 
 - include: certonly.yml
 
 # configure
 - name: Copy renew-timer configuration in place.
-  copy:
-    src: letsencrypt-renew.timer
-    dest: /etc/systemd/system/letsencrypt-renew.timer
-    owner: root
-    group: root
-    mode: 00644
+  copy: src=letsencrypt-renew.timer dest=/etc/systemd/system/letsencrypt-renew.timer
   notify:
     - reload daemon
     - restart renew-timer
 
 - name: Copy renew-service configuration in place.
-  copy:
-    src: letsencrypt-renew.service
-    dest: /etc/systemd/system/letsencrypt-renew.service
-    owner: root
-    group: root
-    mode: 00644
+  copy: src=letsencrypt-renew.service dest=/etc/systemd/system/letsencrypt-renew.service
   notify:
     - reload daemon
     - restart renew

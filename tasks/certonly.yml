@@ -4,8 +4,6 @@
   register: result
   with_dict: "{{ letsencrypt_domains }}"
 
-# - set_fact: cert_exists="{{ result.stat.exists }}"
-
 - name: Ensure "{{ http_service }}" is stopped at runnning certbot.
   service: name="{{ http_service }}" state=stopped
   when: http_service != ""
@@ -17,12 +15,17 @@
     creates: /etc/letsencrypt/live/{{ item.key }}
   with_dict: "{{ letsencrypt_domains }}"
 
+- name: Renew certbot.
+  command: certbot renew
+  register: result
+  changed_when: '"The following certs have been renewed" in result.stdout'
+
 - name: Ensure "{{ http_service }}" is started at finished certbot.
   service: name="{{ http_service }}" state=started
   when: http_service != ""
   changed_when: False
 
-- name: Renew certbot.
-  command: certbot renew --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx"
-  register: result
-  changed_when: '"The following certs have been renewed" in result.stdout'
+# - name: Renew certbot.
+#   command: certbot renew --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx"
+#   register: result
+#   changed_when: '"The following certs have been renewed" in result.stdout'
