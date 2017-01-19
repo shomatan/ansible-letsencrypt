@@ -9,6 +9,7 @@
 - name: Ensure "{{ http_service }}" is stopped at runnning certbot.
   service: name="{{ http_service }}" state=stopped
   when: http_service != ""
+  changed_when: False
 
 - name: Run certbot certonly.
   command: certbot certonly --standalone -n --agree-tos --domain {{ item.key }} --email {{ item.value.email }}
@@ -19,3 +20,9 @@
 - name: Ensure "{{ http_service }}" is started at finished certbot.
   service: name="{{ http_service }}" state=started
   when: http_service != ""
+  changed_when: False
+
+- name: Renew certbot.
+  command: certbot renew --pre-hook "systemctl stop nginx" --post-hook "systemctl start nginx"
+  register: result
+  changed_when: '"The following certs have been renewed" in result.stdout'
