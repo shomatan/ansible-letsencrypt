@@ -8,7 +8,6 @@ None.
 |Key|Type|Description|Default|
 |:--|:---|:----------|:------|
 |letsencrypt_domains|Dict|See below.|{}|
-|letsencrypt_webservice_type|String|nginx or apache|nginx|
 
 ## Dependencies
 None.
