@@ -1,0 +1,14 @@
+---
+- name: Create ssl directory. If it does not exist.
+  file:
+    path: /etc/nginx/ssl
+    state: directory
+
+- name: Check the encrypt file exists.
+  stat:
+    path: /etc/nginx/ssl/dh2048.pem
+  register: f
+
+- name: Create openssl dhparam.
+  command: openssl dhparam 2048 -out /etc/nginx/ssl/dh2048.pem
+  when: not f.stat.exists

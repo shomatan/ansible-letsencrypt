@@ -1,9 +1,12 @@
 ---
 - name: restart renew-timer
   service: name=letsencrypt-renew.timer state=restarted
+  when: ansible_connection != 'docker'
 
 - name: restart renew
   service: name=letsencrypt-renew state=restarted
+  when: ansible_connection != 'docker'
 
 - name: reload daemon
   command: systemctl daemon-reload
+  when: ansible_connection != 'docker'

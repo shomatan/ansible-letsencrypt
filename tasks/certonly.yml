@@ -1,4 +1,10 @@
 ---
+- shell: lsof -i:80 | awk 'NR==2{print $1}'
+  register: web_server
+  changed_when: false
+
+- set_fact: http_service="{{ web_server.stdout }}"
+  
 - name: Check the encrypt file exists.
   stat:
     path: /etc/letsencrypt/live/{{ item.key }}

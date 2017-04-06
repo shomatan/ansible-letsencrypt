@@ -9,50 +9,23 @@
   yum:
     name: lsof
 
-# certbot
-- shell: lsof -i:80 | awk 'NR==2{print $1}'
-  register: web_server
-  changed_when: false
-
-- set_fact: http_service="{{ web_server.stdout }}"
-
+# run the certonly command.
 - include: certonly.yml
+  when: ansible_connection != 'docker'
 
 # configure
-- name: Copy renew-timer configuration in place.
-  copy:
-    src: letsencrypt-renew.timer
-    dest: /etc/systemd/system/letsencrypt-renew.timer
-  notify:
-    - reload daemon
-    - restart renew-timer
+- include: configure.yml
+  when: ansible_connection != 'docker'
 
-- name: Copy renew-service configuration in place.
-  copy:
-    src: letsencrypt-renew.service
-    dest: /etc/systemd/system/letsencrypt-renew.service
-  notify:
-    - reload daemon
-    - restart renew
+# web server config
+- include: nginx.yml
+  when: ansible_connection != 'docker'
 
 # service
 - name: Ensure renew-timer is started and enabled to start at boot.
   service: name=letsencrypt-renew.timer state=started enabled=yes
+  when: ansible_connection != 'docker'
 
 - name: Ensure renew is started and enabled to start at boot.
   service: name=letsencrypt-renew state=started enabled=yes
-
-# web server config
-- name: Create ssl directory. If it does not exist.
-  file:
-    path: /etc/nginx/ssl
-    state: directory
-
-- name: Check the encrypt file exists.
-  stat:
-    path: /etc/nginx/ssl/dh2048.pem
-  register: f
-
-- name: Create openssl dhparam.
-  command: openssl dhparam 2048 -out /etc/nginx/ssl/dh2048.pem
-  when: not f.stat.exists
+  when: ansible_connection != 'docker'
