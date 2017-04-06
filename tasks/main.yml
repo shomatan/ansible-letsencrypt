@@ -29,3 +29,8 @@
 - name: Ensure renew is started and enabled to start at boot.
   service: name=letsencrypt-renew state=started enabled=yes
   when: ansible_connection != 'docker'
+
+# finalize
+- name: Purge yum cache.
+  command: yum clean all
+  when: ansible_connection == 'docker'
