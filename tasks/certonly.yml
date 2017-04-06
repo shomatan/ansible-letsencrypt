@@ -1,6 +1,7 @@
 ---
 - name: Check the encrypt file exists.
-  stat: path=/etc/letsencrypt/live/{{ item.key }}
+  stat:
+    path: /etc/letsencrypt/live/{{ item.key }}
   register: result
   with_dict: "{{ letsencrypt_domains }}"
 

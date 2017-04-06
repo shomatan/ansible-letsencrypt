@@ -1,10 +1,13 @@
 ---
 # install
 - name: Ensure certbot is installed.
-  yum: name=certbot enablerepo=epel
+  yum:
+    name: certbot
+    enablerepo: epel
 
 - name: Ensure lsof is installed.
-  yum: name=lsof
+  yum:
+    name: lsof
 
 # certbot
 - shell: lsof -i:80 | awk 'NR==2{print $1}'
@@ -17,13 +20,17 @@
 
 # configure
 - name: Copy renew-timer configuration in place.
-  copy: src=letsencrypt-renew.timer dest=/etc/systemd/system/letsencrypt-renew.timer
+  copy:
+    src: letsencrypt-renew.timer
+    dest: /etc/systemd/system/letsencrypt-renew.timer
   notify:
     - reload daemon
     - restart renew-timer
 
 - name: Copy renew-service configuration in place.
-  copy: src=letsencrypt-renew.service dest=/etc/systemd/system/letsencrypt-renew.service
+  copy:
+    src: letsencrypt-renew.service
+    dest: /etc/systemd/system/letsencrypt-renew.service
   notify:
     - reload daemon
     - restart renew
@@ -37,10 +44,13 @@
 
 # web server config
 - name: Create ssl directory. If it does not exist.
-  file: path=/etc/nginx/ssl state=directory
+  file:
+    path: /etc/nginx/ssl
+    state: directory
 
 - name: Check the encrypt file exists.
-  stat: path=/etc/nginx/ssl/dh2048.pem
+  stat:
+    path: /etc/nginx/ssl/dh2048.pem
   register: f
 
 - name: Create openssl dhparam.
